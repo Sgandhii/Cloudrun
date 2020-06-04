@@ -2,7 +2,7 @@ steps:
 
 #Installing the dependencies
 - name: 'node:10'
-  id: 'downtime-alert-service-build'
+  id: 'downtime-alert-build'
   entrypoint: 'bash'
   args:
     - '-c'
@@ -14,25 +14,25 @@ steps:
 
 #Building Image
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: 'downtime-alert-service-image'
+  id: 'downtime-alert-image'
   entrypoint: 'bash'
   args:
     - '-c'
     - |
       ls -ltr
-      gcloud builds submit --tag gcr.io/$PROJECT_ID/ccn-downtime-alert-service:$_VERSION .
+      gcloud builds submit --tag gcr.io/$PROJECT_ID/ccn-downtime-alert:$_VERSION .
   waitFor:
       - 'downtime-alert-service-build'
   dir: 'ingestion/downtime-alert-service'
 
 # Deploy pushed image to cloud run
 - name: 'gcr.io/cloud-builders/gcloud'
-  id: 'downtime-alert-service-deploy'
+  id: 'downtime-alert-deploy'
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      gcloud beta run deploy ccn-downtime-alert-service-dev --image=gcr.io/$PROJECT_ID/ccn-downtime-alert-service:$_VERSION --platform=managed --region=$_REGION --revision-suffix=$_VERSION
+      gcloud beta run deploy ccn-downtime-alert-dev --image=gcr.io/$PROJECT_ID/ccn-downtime-alert:$_VERSION --platform=managed --region=$_REGION --revision-suffix=$_VERSION
   waitFor:
     - 'downtime-alert-service-image'
   dir: 'ingestion/downtime-alert-service'
@@ -40,7 +40,7 @@ steps:
 substitutions:
     #GCP Specific configuration. Please do'nt change anything
     _REGION: us-central1
-    _GCS_BUCKET: ccn-build
+    _GCS_BUCKET: ccn-build1
     
     
     #Developers only change
