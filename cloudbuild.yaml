@@ -22,7 +22,7 @@ steps:
       ls -ltr
       gcloud builds submit --tag gcr.io/$PROJECT_ID/ccn-downtime-alert:$_VERSION .
   waitFor:
-      - 'downtime-alert-service-build'
+      - 'downtime-alert-build'
   dir: 'ingestion/downtime-alert-service'
 
 # Deploy pushed image to cloud run
@@ -34,7 +34,7 @@ steps:
     - |
       gcloud beta run deploy ccn-downtime-alert-dev --image=gcr.io/$PROJECT_ID/ccn-downtime-alert:$_VERSION --platform=managed --region=$_REGION --revision-suffix=$_VERSION
   waitFor:
-    - 'downtime-alert-service-image'
+    - 'downtime-alert-image'
   dir: 'ingestion/downtime-alert-service'
 
 substitutions:
